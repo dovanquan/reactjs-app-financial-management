@@ -3,19 +3,55 @@ import { BrowserRouter as Router, Route, Link, Redirect, withRouter } from "reac
 import GoogleLogin from 'react-google-login';
 import { GoogleLogout } from 'react-google-login';
 
+
 class IndexComponet extends Component {
     constructor(props) {
         super(props);
+            this.state = {
+                editValue :this.props.infoUser.profileObj.name,
+                isEdit : false,
+            }
     }
 
     logout = () => {
         this.props.onUpdateStatus(false);
     }
 
+    editName = (name) => {
+        this.setState({
+            isEdit:true
+        })
+    }
+    handleChange = (e) => {
+        this.setState({
+            editValue: e.target.value
+        })
+    }
+
+    formUpdate = (isEdit, editValue, name) => {
+        return (isEdit) ? <input type="text" value={editValue} onChange={(e) => { this.handleChange(e) }} /> : editValue
+    }
+
+    updateButton = (isEdit, editValue, name) => {
+        let beforeButton = <button onClick={() => { this.editName(localStorage.getItem('name')) }}>Edit name</button>
+        let afterButton = <button onClick={() => { this.save(editValue) }}>Save</button>
+        return (isEdit) ? afterButton : beforeButton;
+    }
+
+    save = (editValue) => {
+        this.setState({
+            editValue: editValue,
+            isEdit:false
+        })
+    }
+
     render() {
         return (
             <div>
-                <h3>Chao mung ban den voi trang chu</h3>
+                <h3>Chao mung ban 
+                    {this.formUpdate(this.state.isEdit, this.state.editValue, localStorage.getItem('name'))}
+                    {this.updateButton(this.state.isEdit, this.state.editValue, localStorage.getItem('name'))}
+                </h3>
                 <GoogleLogout
                     buttonText="Logout"
                     onLogoutSuccess={this.logout}
@@ -33,7 +69,7 @@ class LoginComponet extends Component {
 
     render() {
         const responseGoogle = (response) => {
-            this.props.onUpdateStatus(true);
+            this.props.onUpdateStatus(true, response);
         }  
         return (
             <div>
@@ -49,15 +85,12 @@ class LoginComponet extends Component {
     }
 }
 
-// const Index1 = () => <IndexComponet onUpdateStatus={this.updateStatus}/>;
-// const Login = () => <LoginComponet onUpdateStatus={this.updateStatus}/>;
-const Login = () => <LoginComponet />;
-// const Index = () => <IndexComponet />;
 class Home extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            status: this.props.status
+            status: false,
+            infoUser: ''
         }
     }
     
@@ -69,26 +102,24 @@ class Home extends Component {
         return <Redirect to='/login' />
     }
 
-    updateStatus = (status) => {
+    updateStatus = (newStatus, response) => {
+        console.log('update Status', newStatus);
         this.setState({
-            status:status
+            status:newStatus,
+            infoUser:response
         })
-    }
-
-    
-    update() {
-
-        if(this.state.status) {
-            return <IndexComponet onUpdateStatus={this.updateStatus}/>            
-        } else {
-            return <LoginComponet onUpdateStatus={this.updateStatus}/> 
-        }
     }
         
     render() {
-        return (
-            <div>{this.update()}</div>
-        )
+        if(this.state.status) {
+            return (
+                <IndexComponet onUpdateStatus={this.updateStatus} infoUser={this.state.infoUser}/>
+            ) 
+        } else {
+            return (
+                <LoginComponet onUpdateStatus={this.updateStatus}/>
+            )
+        }
     }
 }
 
