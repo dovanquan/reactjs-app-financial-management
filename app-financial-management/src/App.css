@@ -22,3 +22,24 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.menu ul li {
+  list-style: none;
+}
+.headerInfo {
+  background-color:#FFFFFF;
+  height: 60px;
+}
+.contentInfo {
+  background-color:#dee7ee;
+      height: 400px;
+}
+.headerInfo .dropdown {
+  width:200px;
+  float: right;
+  line-height: 50px;
+  text-align: left;
+}
+.headerInfo .signOut a {
+  cursor: pointer;
+}
