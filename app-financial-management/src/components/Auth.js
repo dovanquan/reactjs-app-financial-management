@@ -7,15 +7,25 @@ import {
   withRouter
 } from "react-router-dom";
 import GoogleLogin from 'react-google-login';
-import { GoogleLogout } from 'react-google-login';
+import Welcome from './Welcome';
+import Profile from './Profile';
+import Addwallet from './Addwallet';
+
+
+const Protected = () => <Welcome />
+const UpdateName = () => <Profile username={username} />
+const Notice = () => <div className="contentInfo"><h3>Cập nhật thành công!</h3></div>
+const Wallet = () => <Addwallet />
 
 const Auth = () => (
   <Router>
-    <div class="menu">
+    <div className="menu">
       <AuthButton />
-      <Route path="/login" component={Login} />
+      <Route path="/login" exact component={Login} />
       <PrivateRoute path="/protected" component={Protected} />
-      <PrivateRoute path="/edit" component={Profile} />
+      <PrivateRoute path="/edit" component={UpdateName} />
+      <PrivateRoute path="/notice" component={Notice} />
+      <PrivateRoute path="/Addwallet" component={Wallet} />
     </div>
   </Router>
 );
@@ -34,19 +44,23 @@ const fakeAuth = {
 
 
 let infoUser = JSON.parse(localStorage.getItem('infoUser'));
+let newName = localStorage.getItem('newName')
+console.log(newName);
+let username = (newName !== '') ? newName : infoUser.name
 const AuthButton = withRouter(
   ({ history }) =>
     fakeAuth.isAuthenticated ? (
         <div>
-        <div class="headerInfo">
-            <div class="dropdown">
-              <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                {infoUser.name} <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-                <span class="caret"></span>
+        <div className="headerInfo">
+            <div className="dropdown">
+              <button className="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                {username} <span className="glyphicon glyphicon-user" aria-hidden="true"></span>
+                <span className="caret"></span>
               </button>
-              <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+              <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
                 <li><Link to="/edit">Edit name</Link></li>
-                <li class="signOut"><a onClick={() => { fakeAuth.signout(() => history.push("/"));}}>Sign out</a></li>
+                <li><Link to="/Addwallet">Add wallet</Link></li>
+                <li className="signOut"><a onClick={() => { fakeAuth.signout(() => history.push("/"));}}>Sign out</a></li>
               </ul>
             </div>
         </div>
@@ -74,13 +88,6 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
   />
 );
 
-const Protected = () => <div class="contentInfo"><h3>Protected</h3></div>
-const Profile = () => <div class="contentInfo">
-  <h3>Thay doi ten nguoi dung</h3>
-  <input type="text" value={infoUser.name}  />
-  <button>save</button>
-</div>
-
 class Login extends React.Component {
   state = {
     redirectToReferrer: false
@@ -103,8 +110,8 @@ class Login extends React.Component {
     return (
       <div id="main-content">
       <div id="header">
-        <div class="jumbotron">
-          <h1 class="display-3">Login</h1>
+        <div className="jumbotron">
+          <h1 className="display-3">Login</h1>
           <p>
             <GoogleLogin
               clientId="899159168724-dp2fi0kfp1op25eh4qr38a1gv8t9ah92.apps.googleusercontent.com"
